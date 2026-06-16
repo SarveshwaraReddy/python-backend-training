@@ -18,3 +18,40 @@
 2026-06-16 11:16:21,057 | INFO | Registered new user: akhil role=employee
 2026-06-16 11:16:28,255 | WARNING | Invalid login attempt for username=employee
 2026-06-16 11:17:15,826 | INFO | User logged in: akhil
+2026-06-16 12:02:16,003 | INFO | Registered new user: vishnu role=hr
+2026-06-16 12:02:22,563 | INFO | User logged in: vishnu
+2026-06-16 12:02:26,557 | WARNING | Permission denied for vishnu: Admin privileges required.
+2026-06-16 12:02:55,252 | INFO | Employee updated by vishnu: {'salary': 27000.0, 'experience': 1.5}
+2026-06-16 12:03:44,920 | INFO | Registered new user: arun role=employee
+2026-06-16 12:03:50,345 | INFO | User logged in: arun
+2026-06-16 12:07:43,766 | INFO | User logged in: arun
+2026-06-16 12:07:58,561 | WARNING | Permission denied for arun: Employees can view only their own profile.
+2026-06-16 12:09:01,721 | INFO | User logged in: arun
+2026-06-16 12:09:11,318 | WARNING | Permission denied for arun: Employees can view only their own profile.
+2026-06-16 12:09:54,489 | INFO | User logged in: akhil
+2026-06-16 12:10:15,450 | WARNING | Permission denied for akhil: Employees can view only their own profile.
+2026-06-16 12:10:25,078 | WARNING | Invalid login attempt for username=Krishna
+2026-06-16 12:10:53,925 | INFO | Registered new user: Krishna role=employee
+2026-06-16 12:11:01,976 | INFO | User logged in: Krishna
+2026-06-16 12:11:08,550 | WARNING | Permission denied for Krishna: Employees can view only their own profile.
+2026-06-16 12:14:06,201 | INFO | Registered new user: admin role=admin employee_id=None
+2026-06-16 12:14:16,006 | INFO | User logged in: admin
+2026-06-16 12:14:49,761 | INFO | Employee created: {'employee_id': 1, 'name': 'John Doe', 'email': 'john@company.com', 'department': 'Engineering', 'salary': 75000.0, 'experience': 5.0}
+2026-06-16 12:15:16,604 | INFO | Registered new user: john.doe role=employee employee_id=1
+2026-06-16 12:15:27,157 | INFO | User logged in: john.doe
+2026-06-16 12:21:20,919 | WARNING | Invalid login attempt for username=John Doe
+2026-06-16 12:22:34,931 | INFO | Registered new user: msr role=hr employee_id=None
+2026-06-16 12:22:46,524 | INFO | User logged in: john.doe
+2026-06-16 12:24:23,335 | INFO | Registered new user: akhil role=admin employee_id=None
+2026-06-16 12:24:32,098 | INFO | User logged in: akhil
+2026-06-16 12:25:38,782 | INFO | Employee created: {'employee_id': 102, 'name': 'Akhil', 'email': 'akhil2002@company.in', 'department': 'operations', 'salary': 40000.0, 'experience': 2.5}
+2026-06-16 12:27:58,650 | INFO | Employee created: {'employee_id': 103, 'name': 'Dan', 'email': 'dan2000@company.in', 'department': 'IT', 'salary': 25000.0, 'experience': 1.0}
+2026-06-16 12:28:29,194 | INFO | Employee updated by akhil: {}
+2026-06-16 12:29:29,582 | INFO | Registered new user: sai role=hr employee_id=None
+2026-06-16 12:29:36,071 | INFO | User logged in: sai
+2026-06-16 12:29:38,395 | WARNING | Permission denied for sai: Admin privileges required.
+2026-06-16 12:29:53,709 | INFO | Employee updated by sai: {'experience': 2.0}
+2026-06-16 12:30:10,933 | WARNING | Permission denied for sai: Admin privileges required.
+2026-06-16 12:30:45,419 | INFO | Registered new user: vishnu role=employee employee_id=104
+2026-06-16 12:30:55,056 | INFO | User logged in: vishnu
+2026-06-16 12:32:39,625 | INFO | User logged in: john.doe

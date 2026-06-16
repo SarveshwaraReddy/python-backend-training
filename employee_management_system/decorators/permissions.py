@@ -35,7 +35,7 @@ def employee_self_or_higher(func: Callable[..., Any]) -> Callable[..., Any]:
         employee_id: int = kwargs.get("employee_id")
         if not user:
             raise PermissionError("User authentication required.")
-        if user.role.lower() == "employee" and user.username != str(employee_id):
+        if user.role.lower() == "employee" and user.employee_id != employee_id:
             raise PermissionError("Employees can view only their own profile.")
         return func(*args, **kwargs)
 

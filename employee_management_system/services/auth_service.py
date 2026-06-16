@@ -27,10 +27,10 @@ class AuthService:
         with self.data_file.open("w", encoding="utf-8") as file:
             json.dump([user.to_dict() for user in self.users.values()], file, indent=4)
 
-    def register_user(self, username: str, role: str) -> User:
+    def register_user(self, username: str, role: str, employee_id: int | None = None) -> User:
         if username in self.users:
             raise ValueError(f"User {username} already exists.")
-        user = User(username=username, role=role)
+        user = User(username=username, role=role, employee_id=employee_id)
         self.users[username] = user
         self.save_users()
         return user

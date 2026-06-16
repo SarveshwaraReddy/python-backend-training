@@ -1,0 +1,26 @@
+[
+    {
+        "employee_id": 1,
+        "name": "John Doe",
+        "email": "john@company.com",
+        "department": "Engineering",
+        "salary": 75000.0,
+        "experience": 5.0
+    },
+    {
+        "employee_id": 102,
+        "name": "Akhil",
+        "email": "akhil2002@company.in",
+        "department": "operations",
+        "salary": 40000.0,
+        "experience": 2.5
+    },
+    {
+        "employee_id": 103,
+        "name": "Dan",
+        "email": "dan2000@company.in",
+        "department": "IT",
+        "salary": 25000.0,
+        "experience": 2.0
+    }
+]

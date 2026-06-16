@@ -49,8 +49,18 @@ def register_user(auth_service: AuthService) -> None:
     if role not in {"admin", "hr", "employee"}:
         print("Invalid role.")
         return
-    auth_service.register_user(username, role)
-    logger.info("Registered new user: %s role=%s", username, role)
+    
+    employee_id = None
+    if role == "employee":
+        try:
+            employee_id = int(input("Enter your Employee ID: "))
+        except ValueError:
+            print("Invalid Employee ID.")
+            logger.error("Invalid employee ID during registration")
+            return
+    
+    auth_service.register_user(username, role, employee_id=employee_id)
+    logger.info("Registered new user: %s role=%s employee_id=%s", username, role, employee_id)
     print("User registered successfully.")
 
 
@@ -241,8 +251,11 @@ def run_user_menu(user: object) -> None:
                     print("Invalid option.")
             else:
                 if choice == "1":
-                    employee_id = int(user.username)
-                    view_employee_profile(employee_service=employee_service, user=user, employee_id=employee_id)
+                    try:
+                        employee_id = int(input("Enter your Employee ID: "))
+                        view_employee_profile(employee_service=employee_service, user=user, employee_id=employee_id)
+                    except ValueError:
+                        print("Invalid ID.")
                 elif choice == "2":
                     break
                 else:
