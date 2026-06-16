@@ -1,0 +1,32 @@
+[
+    {
+        "username": "admin",
+        "role": "admin",
+        "employee_id": null
+    },
+    {
+        "username": "john.doe",
+        "role": "employee",
+        "employee_id": 1
+    },
+    {
+        "username": "msr",
+        "role": "hr",
+        "employee_id": null
+    },
+    {
+        "username": "akhil",
+        "role": "admin",
+        "employee_id": null
+    },
+    {
+        "username": "sai",
+        "role": "hr",
+        "employee_id": null
+    },
+    {
+        "username": "vishnu",
+        "role": "employee",
+        "employee_id": 104
+    }
+]
