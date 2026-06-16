@@ -1,0 +1,20 @@
+2026-06-16 10:54:34,606 | INFO | Registered new user: admin role=admin
+2026-06-16 10:54:47,125 | INFO | User logged in: admin
+2026-06-16 10:55:28,670 | INFO | Employee created: {'employee_id': 1, 'name': 'John Doe', 'email': 'john@company.com', 'department': 'Engineering', 'salary': 75000.0, 'experience': 5.0}
+2026-06-16 10:59:36,113 | INFO | Registered new user: sarveshwara role=admin
+2026-06-16 10:59:46,828 | INFO | User logged in: sarveshwara
+2026-06-16 11:00:35,575 | INFO | Employee created: {'employee_id': 101, 'name': 'ram', 'email': 'ram1999@abc.in', 'department': 'IT', 'salary': 25000.0, 'experience': 1.0}
+2026-06-16 11:01:35,604 | INFO | Employee created: {'employee_id': 102, 'name': 'krishna', 'email': 'krish163@abc.in', 'department': 'operations', 'salary': 35000.0, 'experience': 2.0}
+2026-06-16 11:02:13,004 | INFO | Employee deleted by sarveshwara: 1
+2026-06-16 11:11:19,441 | INFO | Registered new user: msr role=admin
+2026-06-16 11:11:28,692 | INFO | User logged in: msr
+2026-06-16 11:12:20,868 | INFO | Employee created: {'employee_id': 103, 'name': 'raju', 'email': 'raju2000@abc.in', 'department': 'hr', 'salary': 30000.0, 'experience': 2.0}
+2026-06-16 11:12:52,405 | INFO | Employee updated by msr: {'name': 'Ram'}
+2026-06-16 11:13:06,542 | INFO | Employee deleted by msr: 103
+2026-06-16 11:14:54,337 | INFO | Registered new user: sai role=hr
+2026-06-16 11:15:03,100 | INFO | User logged in: sai
+2026-06-16 11:15:15,240 | WARNING | Permission denied for sai: Admin privileges required.
+2026-06-16 11:15:40,426 | INFO | Employee updated by sai: {'name': 'Krishna'}
+2026-06-16 11:16:21,057 | INFO | Registered new user: akhil role=employee
+2026-06-16 11:16:28,255 | WARNING | Invalid login attempt for username=employee
+2026-06-16 11:17:15,826 | INFO | User logged in: akhil
