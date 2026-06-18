@@ -28,9 +28,10 @@ def print_employee(employee: Employee) -> None:
 def select_user(auth_service: AuthService) -> None:
     logger = get_logger()
     username = input("Enter username: ").strip()
-    user = auth_service.authenticate(username)
+    password = input("Enter password: ").strip()
+    user = auth_service.authenticate(username, password)
     if not user:
-        print("User not found. Please register first.")
+        print("Invalid username or password. Please try again.")
         logger.warning("Invalid login attempt for username=%s", username)
         return
 
@@ -49,7 +50,13 @@ def register_user(auth_service: AuthService) -> None:
     if role not in {"admin", "hr", "employee"}:
         print("Invalid role.")
         return
-    
+
+    password = input("Password: ").strip()
+    confirm_password = input("Confirm password: ").strip()
+    if password != confirm_password:
+        print("Passwords do not match.")
+        return
+
     employee_id = None
     if role == "employee":
         try:
@@ -58,8 +65,8 @@ def register_user(auth_service: AuthService) -> None:
             print("Invalid Employee ID.")
             logger.error("Invalid employee ID during registration")
             return
-    
-    auth_service.register_user(username, role, employee_id=employee_id)
+
+    auth_service.register_user(username, role, password, employee_id=employee_id)
     logger.info("Registered new user: %s role=%s employee_id=%s", username, role, employee_id)
     print("User registered successfully.")
 

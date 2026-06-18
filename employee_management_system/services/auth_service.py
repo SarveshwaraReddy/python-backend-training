@@ -27,10 +27,19 @@ class AuthService:
         with self.data_file.open("w", encoding="utf-8") as file:
             json.dump([user.to_dict() for user in self.users.values()], file, indent=4)
 
-    def register_user(self, username: str, role: str, employee_id: int | None = None) -> User:
+    def register_user(
+        self,
+        username: str,
+        role: str,
+        password: str,
+        employee_id: int | None = None,
+    ) -> User:
         if username in self.users:
             raise ValueError(f"User {username} already exists.")
-        user = User(username=username, role=role, employee_id=employee_id)
+        if not password:
+            raise ValueError("Password is required.")
+
+        user = User(username=username, role=role, employee_id=employee_id, password=password)
         self.users[username] = user
         self.save_users()
         return user
@@ -38,8 +47,11 @@ class AuthService:
     def get_user(self, username: str) -> Optional[User]:
         return self.users.get(username)
 
-    def authenticate(self, username: str) -> Optional[User]:
-        return self.get_user(username)
+    def authenticate(self, username: str, password: str) -> Optional[User]:
+        user = self.get_user(username)
+        if user and user.check_password(password):
+            return user
+        return None
 
     def list_users(self) -> List[User]:
         return list(self.users.values())

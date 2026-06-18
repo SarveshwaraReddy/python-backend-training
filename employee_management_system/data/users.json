@@ -28,5 +28,10 @@
         "username": "vishnu",
         "role": "employee",
         "employee_id": 104
+    },
+    {
+        "username": "bala",
+        "role": "admin",
+        "employee_id": null
     }
 ]

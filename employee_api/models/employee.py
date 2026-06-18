@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, asdict
-from typing import Dict, Any
+from typing import Any, Dict
 
 
 @dataclass
@@ -24,16 +24,6 @@ class Employee:
             raise ValueError("Email must be valid.")
         if not self.department.strip():
             raise ValueError("Department cannot be empty.")
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Employee":
-        return cls(**data)
-
-    def calculate_bonus(self, rate: float = 0.1) -> float:
-        return self.salary * rate
-
-    def annual_compensation(self, bonus_rate: float = 0.1) -> float:
-        return self.salary + self.calculate_bonus(bonus_rate)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
