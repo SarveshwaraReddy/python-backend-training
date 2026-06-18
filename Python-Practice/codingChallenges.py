@@ -10,7 +10,7 @@
 #         print("Enter a vaid number ")
 # evenOdd()
 
-
+# =========================================================
 
 # 2. Find the largest of three numbers. 
 # def max():
@@ -28,12 +28,16 @@
 #         print("Enter a valid number")
 # max()
 
+# =========================================================
+
 # 3. Reverse a string. 
 # def reverseString():
 #     str = input("Enter a string : ")
 #     reverse = str[::-1]
 #     print(reverse)
 # reverseString()
+
+# =========================================================
 
 #  Count vowels in a string. 
 # def vowelCount():
@@ -49,6 +53,8 @@
 #         print(f"the total number of vowels present in gien string {str} : {count}")
 # vowelCount()
 
+# =========================================================
+
 #  Check a palindrome. 
 # def palindrome():
 #     str = input("Enter the string to check : ")
@@ -60,6 +66,8 @@
 #         print("the given string is not a palindrome")    
 # palindrome()
 
+# =========================================================
+
 #  Find duplicate elements in a list. 
 # def duplicate_elements():
 #     list = [1,2,'a','s','a',3,4,5,1,3,6,7,3]
@@ -70,6 +78,8 @@
 #                 dups.append(list[i])
 #     print(f"Duplicate elements : {dups}")
 # duplicate_elements()
+
+# =========================================================
 
 #  Sort employee salaries. 
 # def sort_sal():
@@ -84,6 +94,8 @@
 #     for name , salary in sorted_sal:
 #         print(name,salary)
 # sort_sal()
+
+# =========================================================
 
 
 #  Calculate average salary from employee records.
@@ -103,6 +115,8 @@
 #     print(f"The average salary of the employee records : {avg}")
 # avg_sal()
 
+# =========================================================
+
 #  Find the employee with highest salary. 
 # def highest_sal():
 #     employees = {
@@ -121,21 +135,20 @@
 #     print(f"The employee with highest salary is  {emp_name} : {max_sal}")
 # highest_sal()
 
+# =========================================================
+
 #  Generate a simple salary slip. 
-def salary_slip():
-    name = input("Enter employee name: ")
-    salary = float(input("Enter salary: "))
-    allowance = float(input("Enter allowance: "))
-    deduction = float(input("Enter deduction: "))
-
-    net_salary = salary + allowance - deduction
-
-    print("\nSALARY SLIP")
-    print("-----------")
-    print("Employee Name :", name)
-    print("Basic Salary  :", salary)
-    print("Allowance     :", allowance)
-    print("Deduction     :", deduction)
-    print("Net Salary    :", net_salary)
-
-salary_slip()
+# def salary_slip():
+#     name = input("Enter employee name: ")
+#     salary = float(input("Enter salary: "))
+#     allowance = float(input("Enter allowance: "))
+#     deduction = float(input("Enter deduction: "))
+#     net_salary = salary + allowance - deduction
+#     print("\nSALARY SLIP")
+#     print("-----------")
+#     print("Employee Name :", name)
+#     print("Basic Salary  :", salary)
+#     print("Allowance     :", allowance)
+#     print("Deduction     :", deduction)
+#     print("Net Salary    :", net_salary)
+# salary_slip()

@@ -50,19 +50,21 @@ while True:
             }
             employees.append(new_emp)
             print("Employee added successfully!")
-
+            
+    # View all employees
+    
     elif choice == "2":
         print("\n--- View All Employees ---")
         if len(employees) == 0:
             print("No employees found.")
         else:
-            # Simple print statements instead of a clean aligned table
+          
             for emp in employees:
                 print("ID:", emp["Employee ID"], "| Name:", emp["Name"], "| Email:", emp["Email"], "| Dept:", emp["Department"], "| Salary:", emp["Salary"], "| Exp:", emp["Experience"])
 
-    # ----------------------------------------------------
-    # FEATURE 3: SEARCH EMPLOYEE
-    # ----------------------------------------------------
+
+    # Search Employee
+   
     elif choice == "3":
         print("\n--- Search Employee ---")
         try:
@@ -72,7 +74,6 @@ while True:
             continue
             
         found = False
-        # Writing the exact same search loop again...
         for emp in employees:
             if emp["Employee ID"] == search_id:
                 print("Employee Found!")
@@ -88,9 +89,8 @@ while True:
         if found == False:
             print("Employee not found.")
 
-    # ----------------------------------------------------
-    # FEATURE 4: UPDATE EMPLOYEE
-    # ----------------------------------------------------
+ # UPDATE EMPLOYEE
+
     elif choice == "4":
         print("\n--- Update Employee ---")
         try:
@@ -100,7 +100,6 @@ while True:
             continue
             
         found = False
-        # Writing the search loop a third time...
         for emp in employees:
             if emp["Employee ID"] == update_id:
                 found = True
@@ -138,9 +137,8 @@ while True:
         if found == False:
             print("Employee not found.")
 
-    # ----------------------------------------------------
-    # FEATURE 5: DELETE EMPLOYEE
-    # ----------------------------------------------------
+    #  Delete Employee
+  
     elif choice == "5":
         print("\n--- Delete Employee ---")
         try:
@@ -150,10 +148,9 @@ while True:
             continue
             
         found = False
-        # Writing the search loop a fourth time...
         for emp in employees:
             if emp["Employee ID"] == delete_id:
-                employees.remove(emp) # Rookie move: modifying the list while iterating through it
+                employees.remove(emp)
                 print("Employee deleted successfully!")
                 found = True
                 break
@@ -161,9 +158,7 @@ while True:
         if found == False:
             print("Employee not found.")
 
-    # ----------------------------------------------------
-    # FEATURE 6: EXIT
-    # ----------------------------------------------------
+    #  Exit
     elif choice == "6":
         print("Thank you for using the application. Bye!")
         break
