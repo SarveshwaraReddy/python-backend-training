@@ -1,0 +1,25 @@
+{% extends 'employees/base.html' %}
+
+{% block title %}{{ form_title }}{% endblock %}
+
+{% block subheader %}
+<p>{{ form_title }}</p>
+{% endblock %}
+
+{% block content %}
+<h2>{{ form_title }}</h2>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label>Name:</label>
+        <input type="text" name="name" value="{{ department.name|default:'' }}" required>
+    </div>
+    <div class="form-group">
+        <label>Description:</label>
+        <textarea name="description" rows="4" required>{{ department.description|default:'' }}</textarea>
+    </div>
+    <button type="submit">Save</button>
+    <a href="{% url 'departments:department_list' %}">Cancel</a>
+</form>
+{% endblock %}
