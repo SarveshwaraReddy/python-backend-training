@@ -1,23 +1,16 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Company Employee Portal</title>
-    <link rel="stylesheet" href="/static/employees/css/style.css">
-</head>
-<body>
-    <nav>
-        <a href="/">Home</a> |
-        <a href="/about/">About</a> |
-        <a href="/contact/">Contact</a>
-    </nav>
-    <header>
-        <h1>ACME Corporation</h1>
-        <p>Welcome to the Company Employee Portal</p>
-    </header>
-    <main>
-        <p>Use the navigation to visit other pages.</p>
-    </main>
-</body>
-</html>
+{% extends 'employees/base.html' %}
+
+{% block title %}Home - Company Portal{% endblock %}
+
+{% block subheader %}
+<p>Welcome to the Company Employee Portal</p>
+{% endblock %}
+
+{% block content %}
+<p>Use the navigation to manage departments and employees.</p>
+<ul>
+    <li><a href="{% url 'departments:department_list' %}">Department Management</a></li>
+    <li><a href="{% url 'employees:employee_list' %}">Employee Management</a></li>
+    <li><a href="/admin/">Django Admin Panel</a></li>
+</ul>
+{% endblock %}

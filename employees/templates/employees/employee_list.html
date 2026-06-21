@@ -1,0 +1,59 @@
+{% extends 'employees/base.html' %}
+
+{% block title %}Employees{% endblock %}
+
+{% block subheader %}
+<p>Employee Management</p>
+{% endblock %}
+
+{% block content %}
+<h2>All Employees</h2>
+
+<form method="get" class="search-form">
+    <input type="text" name="search" placeholder="Search by name, id or email..." value="{{ search }}">
+    <select name="department">
+        <option value="">All Departments</option>
+        {% for dept in departments %}
+        <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>
+            {{ dept.name }}
+        </option>
+        {% endfor %}
+    </select>
+    <button type="submit">Filter</button>
+    <a href="{% url 'employees:employee_add' %}" class="btn">Add Employee</a>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>Employee ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Salary</th>
+            <th>Department</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for employee in employees %}
+        <tr>
+            <td>{{ employee.employee_id }}</td>
+            <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+            <td>{{ employee.email }}</td>
+            <td>{{ employee.salary }}</td>
+            <td>{{ employee.department.name }}</td>
+            <td>{{ employee.status }}</td>
+            <td>
+                <a href="{% url 'employees:employee_edit' employee.pk %}">Edit</a> |
+                <a href="{% url 'employees:employee_delete' employee.pk %}">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">No employees found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
