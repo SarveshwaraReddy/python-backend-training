@@ -1,35 +1,41 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}HR Management Portal{% endblock %}</title>
-    <link rel="stylesheet" href="/static/employees/css/style.css">
+    <link rel="stylesheet" href="{% static 'employees/css/style.css' %}">
 </head>
 <body>
-    <nav>
-        <a href="{% url 'employees:home' %}">Home</a> |
-        <a href="{% url 'employees:about' %}">About</a> |
-        <a href="{% url 'employees:contact' %}">Contact</a> |
-        <a href="{% url 'departments:department_list' %}">Departments</a> |
-        <a href="{% url 'employees:employee_list' %}">Employees</a> |
-        <a href="/admin/">Admin</a>
+    <nav class="navbar">
+        <a href="{% url 'employees:home' %}" class="nav-brand">🏢 ACME Portal</a>
+        <div class="nav-links">
+            <a href="{% url 'employees:home' %}">Home</a>
+            <a href="{% url 'employees:about' %}">About</a>
+            <a href="{% url 'employees:contact' %}">Contact</a>
+            <a href="{% url 'departments:department_list' %}">Departments</a>
+            <a href="{% url 'employees:employee_list' %}">Employees</a>
+            <a href="/admin/">Admin</a>
+        </div>
     </nav>
 
-    <header>
-        <h1>{% block header %}ACME Corporation{% endblock %}</h1>
-        {% block subheader %}{% endblock %}
-    </header>
-
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <p class="message">{{ message }}</p>
-        {% endfor %}
-    </div>
-    {% endif %}
-
     <main>
+        <div class="page-header">
+            <h1 class="page-title">{% block header %}ACME Corporation{% endblock %}</h1>
+            {% block subheader %}{% endblock %}
+        </div>
+
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         {% block content %}{% endblock %}
     </main>
 </body>

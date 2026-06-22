@@ -38,32 +38,38 @@ company_portal/
 └── README.md
 ```
 
-## Tech Stack
+## Tech Stack & Packages Used
 
-- Python
-- Django 6
-- PostgreSQL
-- HTML / CSS
+### Core Technologies
+- **Python**: Core programming language.
+- **Django 6**: High-level Python web framework.
+- **PostgreSQL**: Open-source relational database.
+- **HTML5 & CSS3**: Custom frontend layouts and styling.
+
+### Python Packages (from `requirements.txt`)
+- **Django (`>=6.0`)**: Core web framework.
+- **psycopg2-binary**: PostgreSQL database adapter for Python.
+- **Pillow (`>=10.0.0`)**: Image processing library used for employee profile image uploads.
 
 ## PostgreSQL Setup
 
-1. Install PostgreSQL and verify:
+1. Install PostgreSQL and verify installation:
 
 ```powershell
 psql --version
 ```
 
-2. Open PostgreSQL shell and run:
+2. Open the PostgreSQL shell (`psql`) and create the database and user:
 
 ```sql
 CREATE DATABASE employee_management;
 
-CREATE USER employee_admin WITH PASSWORD 'password123';
+CREATE USER employee_admin WITH PASSWORD 'Sarva@127536';
 
 GRANT ALL PRIVILEGES ON DATABASE employee_management TO employee_admin;
 ```
 
-3. Database settings are configured in `company_portal/settings.py`:
+3. Database configurations in [settings.py](file:///c:/Users/DELL/Backend-training/Django-projects/company_portal/company_portal/settings.py) are as follows:
 
 ```python
 DATABASES = {
@@ -71,8 +77,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'employee_management',
         'USER': 'employee_admin',
-        'PASSWORD': 'password123',
-        'HOST': 'localhost',
+        'PASSWORD': 'Sarva@127536',
+        'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }

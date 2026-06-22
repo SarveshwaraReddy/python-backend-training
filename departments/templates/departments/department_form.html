@@ -1,25 +1,31 @@
 {% extends 'employees/base.html' %}
 
 {% block title %}{{ form_title }}{% endblock %}
+{% block header %}{{ form_title }}{% endblock %}
 
 {% block subheader %}
-<p>{{ form_title }}</p>
+<a href="{% url 'departments:department_list' %}" class="btn btn-secondary">&larr; Back to List</a>
 {% endblock %}
 
 {% block content %}
-<h2>{{ form_title }}</h2>
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="name">Name <span style="color:var(--danger-color)">*</span></label>
+            <input type="text" name="name" id="name" class="form-control" value="{{ department.name|default:'' }}" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description <span style="color:var(--danger-color)">*</span></label>
+            <textarea name="description" id="description" class="form-control" rows="4" required>{{ department.description|default:'' }}</textarea>
+        </div>
 
-<form method="post">
-    {% csrf_token %}
-    <div class="form-group">
-        <label>Name:</label>
-        <input type="text" name="name" value="{{ department.name|default:'' }}" required>
-    </div>
-    <div class="form-group">
-        <label>Description:</label>
-        <textarea name="description" rows="4" required>{{ department.description|default:'' }}</textarea>
-    </div>
-    <button type="submit">Save</button>
-    <a href="{% url 'departments:department_list' %}">Cancel</a>
-</form>
+        <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+            <a href="{% url 'departments:department_list' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Department</button>
+        </div>
+    </form>
+</div>
 {% endblock %}
+

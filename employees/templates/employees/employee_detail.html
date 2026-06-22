@@ -1,0 +1,78 @@
+{% extends 'employees/base.html' %}
+
+{% block title %}Employee Details - {{ employee.first_name }}{% endblock %}
+{% block header %}Employee Profile{% endblock %}
+
+{% block subheader %}
+<div style="display: flex; gap: 1rem;">
+    <a href="{% url 'employees:employee_list' %}" class="btn btn-secondary">&larr; Back to List</a>
+    <a href="{% url 'employees:employee_edit' employee.pk %}" class="btn btn-primary">Edit Profile</a>
+    <a href="{% url 'employees:employee_delete' employee.pk %}" class="btn btn-danger">Delete</a>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="profile-grid">
+        <div class="profile-sidebar">
+            {% if employee.profile_image %}
+            <img src="{{ employee.profile_image.url }}" alt="{{ employee.first_name }}" class="avatar-lg" style="border-radius: var(--radius-full);">
+            {% else %}
+            <div class="avatar-lg" style="border-radius: var(--radius-full); display:flex; align-items:center; justify-content:center; background:#4F46E5; color:white; font-size: 3rem; font-weight:bold;">
+                {{ employee.first_name.0 }}{{ employee.last_name.0 }}
+            </div>
+            {% endif %}
+            
+            <h2 style="margin-top: 1rem; color: var(--text-main);">{{ employee.first_name }} {{ employee.last_name }}</h2>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">{{ employee.designation }}</p>
+            <span class="status-badge status-{{ employee.status }}" style="font-size: 1rem; padding: 0.5rem 1rem;">
+                {{ employee.status }}
+            </span>
+        </div>
+        
+        <div class="profile-details">
+            <div class="detail-item">
+                <div class="detail-label">Employee ID</div>
+                <div class="detail-value" style="color: var(--primary-color);">{{ employee.employee_id }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Department</div>
+                <div class="detail-value">{{ employee.department.name }}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Email Address</div>
+                <div class="detail-value">
+                    <a href="mailto:{{ employee.email }}" style="color: var(--text-main); text-decoration: none;">{{ employee.email }}</a>
+                </div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Phone Number</div>
+                <div class="detail-value">{{ employee.phone }}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Salary</div>
+                <div class="detail-value">${{ employee.salary }}</div>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Joining Date</div>
+                <div class="detail-value">{{ employee.joining_date|date:"F j, Y" }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Created At</div>
+                <div class="detail-value">{{ employee.created_at|date:"F j, Y, g:i a" }}</div>
+            </div>
+            
+            <div class="detail-item">
+                <div class="detail-label">Last Updated</div>
+                <div class="detail-value">{{ employee.updated_at|date:"F j, Y, g:i a" }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
