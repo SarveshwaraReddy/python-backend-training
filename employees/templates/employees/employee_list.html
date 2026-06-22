@@ -1,59 +1,115 @@
 {% extends 'employees/base.html' %}
 
-{% block title %}Employees{% endblock %}
+{% block title %}Employee List{% endblock %}
+{% block header %}Employee Directory{% endblock %}
 
 {% block subheader %}
-<p>Employee Management</p>
+<a href="{% url 'employees:employee_add' %}" class="btn btn-primary">+ Add Employee</a>
 {% endblock %}
 
 {% block content %}
-<h2>All Employees</h2>
-
-<form method="get" class="search-form">
-    <input type="text" name="search" placeholder="Search by name, id or email..." value="{{ search }}">
-    <select name="department">
-        <option value="">All Departments</option>
-        {% for dept in departments %}
-        <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>
-            {{ dept.name }}
-        </option>
-        {% endfor %}
-    </select>
-    <button type="submit">Filter</button>
-    <a href="{% url 'employees:employee_add' %}" class="btn">Add Employee</a>
+<!-- Search and Filter Bar -->
+<form method="GET" class="filter-bar">
+    <div class="form-group" style="margin-bottom: 0;">
+        <label for="search">Search</label>
+        <input type="text" name="search" id="search" class="form-control" placeholder="ID, Name, Email" value="{{ search }}">
+    </div>
+    <div class="form-group" style="margin-bottom: 0;">
+        <label for="department">Department</label>
+        <select name="department" id="department" class="form-control">
+            <option value="">All Departments</option>
+            {% for dept in departments %}
+            <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>
+                {{ dept.name }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group" style="margin-bottom: 0;">
+        <label for="status">Status</label>
+        <select name="status" id="status" class="form-control">
+            <option value="">All Statuses</option>
+            <option value="active" {% if selected_status == 'active' %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if selected_status == 'inactive' %}selected{% endif %}>Inactive</option>
+        </select>
+    </div>
+    <div class="form-group" style="margin-bottom: 0;">
+        <label for="designation">Designation</label>
+        <input type="text" name="designation" id="designation" class="form-control" placeholder="Role..." value="{{ selected_designation }}">
+    </div>
+    <button type="submit" class="btn btn-secondary" style="margin-bottom: 4px;">Filter</button>
+    <a href="{% url 'employees:employee_list' %}" class="btn btn-secondary" style="margin-bottom: 4px;">Clear</a>
 </form>
 
-<table>
-    <thead>
-        <tr>
-            <th>Employee ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Salary</th>
-            <th>Department</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for employee in employees %}
-        <tr>
-            <td>{{ employee.employee_id }}</td>
-            <td>{{ employee.first_name }} {{ employee.last_name }}</td>
-            <td>{{ employee.email }}</td>
-            <td>{{ employee.salary }}</td>
-            <td>{{ employee.department.name }}</td>
-            <td>{{ employee.status }}</td>
-            <td>
-                <a href="{% url 'employees:employee_edit' employee.pk %}">Edit</a> |
-                <a href="{% url 'employees:employee_delete' employee.pk %}">Delete</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="7">No employees found.</td>
-        </tr>
+<div class="card">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Profile</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>
+                        {% if employee.profile_image %}
+                        <img src="{{ employee.profile_image.url }}" alt="{{ employee.first_name }}" class="avatar">
+                        {% else %}
+                        <div class="avatar" style="display:flex; align-items:center; justify-content:center; background:#4F46E5; color:white; font-weight:bold;">
+                            {{ employee.first_name.0 }}{{ employee.last_name.0 }}
+                        </div>
+                        {% endif %}
+                    </td>
+                    <td><a href="{% url 'employees:employee_detail' employee.pk %}" style="text-decoration: none; font-weight: 600; color: var(--primary-color);">{{ employee.employee_id }}</a></td>
+                    <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                    <td>{{ employee.department.name }}</td>
+                    <td>{{ employee.designation }}</td>
+                    <td>
+                        <span class="status-badge status-{{ employee.status }}">
+                            {{ employee.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'employees:employee_edit' employee.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                        <a href="{% url 'employees:employee_delete' employee.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        No employees found matching the criteria.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    {% if is_paginated %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" class="page-link">&laquo;</a>
+        {% endif %}
+        
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="page-link active">{{ num }}</span>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}&{{ query_params }}" class="page-link">{{ num }}</a>
+            {% endif %}
         {% endfor %}
-    </tbody>
-</table>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}&{{ query_params }}" class="page-link">&raquo;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

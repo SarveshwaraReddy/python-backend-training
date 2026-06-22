@@ -1,17 +1,20 @@
 from django.urls import path
 from .views import (
-    home, about, contact,
-    employee_list, employee_add, employee_edit, employee_delete,
+    HomeView, AboutView, ContactView,
+    EmployeeListView, EmployeeDetailView, 
+    EmployeeCreateView, EmployeeUpdateView, EmployeeDeleteView
 )
 
 app_name = 'employees'
 
 urlpatterns = [
-    path('', home, name='home'),
-    path('about/', about, name='about'),
-    path('contact/', contact, name='contact'),
-    path('employees/', employee_list, name='employee_list'),
-    path('employees/add/', employee_add, name='employee_add'),
-    path('employees/edit/<int:pk>/', employee_edit, name='employee_edit'),
-    path('employees/delete/<int:pk>/', employee_delete, name='employee_delete'),
+    path('', HomeView.as_view(), name='home'),
+    path('about/', AboutView.as_view(), name='about'),
+    path('contact/', ContactView.as_view(), name='contact'),
+    
+    path('employees/', EmployeeListView.as_view(), name='employee_list'),
+    path('employees/create/', EmployeeCreateView.as_view(), name='employee_add'),
+    path('employees/<int:pk>/', EmployeeDetailView.as_view(), name='employee_detail'),
+    path('employees/update/<int:pk>/', EmployeeUpdateView.as_view(), name='employee_edit'),
+    path('employees/delete/<int:pk>/', EmployeeDeleteView.as_view(), name='employee_delete'),
 ]

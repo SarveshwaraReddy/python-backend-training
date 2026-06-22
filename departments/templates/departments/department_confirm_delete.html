@@ -1,18 +1,30 @@
 {% extends 'employees/base.html' %}
 
-{% block title %}Delete Department{% endblock %}
-
-{% block subheader %}
-<p>Delete Department</p>
-{% endblock %}
+{% block title %}Delete Department - {{ department.name }}{% endblock %}
+{% block header %}Delete Department{% endblock %}
 
 {% block content %}
-<h2>Are you sure?</h2>
-<p>You are about to delete department: <strong>{{ department.name }}</strong></p>
+<div class="card" style="max-width: 600px; margin: 0 auto; text-align: center; border-top: 4px solid var(--danger-color);">
+    <div style="margin-bottom: 2rem;">
+        <svg style="width: 64px; height: 64px; color: var(--danger-color); margin: 0 auto;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+    </div>
+    
+    <h2 style="margin-bottom: 1rem; color: var(--text-main);">Are you sure?</h2>
+    
+    <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem;">
+        Do you really want to delete the department <strong style="color: var(--text-main);">{{ department.name }}</strong>? 
+        This will also cascade delete all employees belonging to this department. This process cannot be undone.
+    </p>
 
-<form method="post">
-    {% csrf_token %}
-    <button type="submit">Yes, Delete</button>
-    <a href="{% url 'departments:department_list' %}">Cancel</a>
-</form>
+    <form method="POST">
+        {% csrf_token %}
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+            <a href="{% url 'departments:department_list' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-danger">Yes, Delete Department</button>
+        </div>
+    </form>
+</div>
 {% endblock %}
+
