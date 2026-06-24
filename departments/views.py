@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Department
+from accounts.decorators import role_required
 
 
+@role_required(['ADMIN', 'HR', 'MANAGER'])
 def department_list(request):
     search = request.GET.get('search', '')
     departments = Department.objects.all()
@@ -16,6 +18,7 @@ def department_list(request):
     })
 
 
+@role_required(['ADMIN', 'HR'])
 def department_add(request):
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -30,6 +33,7 @@ def department_add(request):
     })
 
 
+@role_required(['ADMIN', 'HR'])
 def department_edit(request, pk):
     department = get_object_or_404(Department, pk=pk)
 
@@ -46,6 +50,7 @@ def department_edit(request, pk):
     })
 
 
+@role_required(['ADMIN', 'HR'])
 def department_delete(request, pk):
     department = get_object_or_404(Department, pk=pk)
 

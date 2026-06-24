@@ -1,0 +1,115 @@
+{% extends "employees/base.html" %}
+{% load static %}
+
+{% block title %}Register | ACME Portal{% endblock %}
+{% block header %}Register{% endblock %}
+{% block subheader %}Create your corporate account{% endblock %}
+
+{% block content %}
+<div style="max-width: 650px; margin: 2rem auto;">
+    <div class="card" style="padding: 2.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); background: white;">
+        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center; color: var(--text-main);">Create Corporate Account</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; text-align: center;">Join ACME's employee portal</p>
+        
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="errorlist" style="margin-bottom: 1.5rem; background: #FEE2E2; padding: 0.75rem; border-radius: var(--radius-md);">
+                    {% for error in form.non_field_errors %}
+                        <p style="margin: 0;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-group">
+                    <label for="id_first_name">First Name</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <div class="errorlist">{{ form.first_name.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_last_name">Last Name</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <div class="errorlist">{{ form.last_name.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_email">Email Address</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="errorlist">{{ form.email.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-group">
+                    <label for="id_phone">Phone Number</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                        <div class="errorlist">{{ form.phone.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_employee_id">Employee ID</label>
+                    {{ form.employee_id }}
+                    {% if form.employee_id.errors %}
+                        <div class="errorlist">{{ form.employee_id.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-group">
+                    <label for="id_role">Corporate Role</label>
+                    {{ form.role }}
+                    {% if form.role.errors %}
+                        <div class="errorlist">{{ form.role.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_profile_image">Profile Image</label>
+                    {{ form.profile_image }}
+                    {% if form.profile_image.errors %}
+                        <div class="errorlist">{{ form.profile_image.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 0.5rem; margin-bottom: 2rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="id_password">Password</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div class="errorlist">{{ form.password.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="id_confirm_password">Confirm Password</label>
+                    {{ form.confirm_password }}
+                    {% if form.confirm_password.errors %}
+                        <div class="errorlist">{{ form.confirm_password.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; font-size: 1rem; border-radius: var(--radius-md);">Register Account</button>
+        </form>
+        
+        <div style="margin-top: 2rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                Already have an account? 
+                <a href="{% url 'accounts:login' %}" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">Sign In here</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

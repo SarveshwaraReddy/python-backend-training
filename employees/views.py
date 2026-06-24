@@ -3,12 +3,13 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, RedirectView
 from django.db.models import Q
 
 from departments.models import Department
 from .models import Employee
 from .forms import EmployeeForm
+from accounts.decorators import RoleRequiredMixin
 
 
 class HomeView(TemplateView):
@@ -19,13 +20,17 @@ class AboutView(TemplateView):
 
 class ContactView(TemplateView):
     template_name = 'employees/contact.html'
-
-
-class EmployeeListView(ListView):
+    
+class LoginView(RedirectView):
+    pattern_name = 'accounts:login'
+    permanent = True
+    
+class EmployeeListView(RoleRequiredMixin, ListView):
     model = Employee
     template_name = 'employees/employee_list.html'
     context_object_name = 'employees'
     paginate_by = 10
+    allowed_roles = ['ADMIN', 'HR', 'MANAGER']
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -71,14 +76,24 @@ class EmployeeListView(ListView):
         return context
 
 
-class EmployeeDetailView(DetailView):
+class EmployeeDetailView(RoleRequiredMixin, DetailView):
     model = Employee
     template_name = 'employees/employee_detail.html'
     context_object_name = 'employee'
+    allowed_roles = ['ADMIN', 'HR', 'MANAGER', 'EMPLOYEE']
+
+    def get(self, request, *args, **kwargs):
+        employee = self.get_object()
+        # Restrict standard employees to only view their own detailed record
+        if request.user.role == 'EMPLOYEE' and request.user.employee_id != employee.employee_id:
+            messages.error(request, "You are only allowed to view your own profile.")
+            return redirect('accounts:dashboard')
+        return super().get(request, *args, **kwargs)
 
 
-class EmployeeCreateView(SuccessMessageMixin, CreateView):
+class EmployeeCreateView(RoleRequiredMixin, SuccessMessageMixin, CreateView):
     model = Employee
+    allowed_roles = ['ADMIN', 'HR']
     form_class = EmployeeForm
     template_name = 'employees/employee_form.html'
     success_url = reverse_lazy('employees:employee_list')
@@ -94,8 +109,9 @@ class EmployeeCreateView(SuccessMessageMixin, CreateView):
         return super().form_invalid(form)
 
 
-class EmployeeUpdateView(SuccessMessageMixin, UpdateView):
+class EmployeeUpdateView(RoleRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Employee
+    allowed_roles = ['ADMIN', 'HR']
     form_class = EmployeeForm
     template_name = 'employees/employee_form.html'
     success_url = reverse_lazy('employees:employee_list')
@@ -111,8 +127,9 @@ class EmployeeUpdateView(SuccessMessageMixin, UpdateView):
         return super().form_invalid(form)
 
 
-class EmployeeDeleteView(SuccessMessageMixin, DeleteView):
+class EmployeeDeleteView(RoleRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Employee
+    allowed_roles = ['ADMIN', 'HR']
     template_name = 'employees/employee_confirm_delete.html'
     success_url = reverse_lazy('employees:employee_list')
     success_message = "Employee Deleted Successfully"
