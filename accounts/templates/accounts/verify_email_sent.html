@@ -1,0 +1,18 @@
+{% extends "employees/base.html" %}
+{% load static %}
+
+{% block title %}Verify Email Sent | ACME Portal{% endblock %}
+{% block header %}Verification Pending{% endblock %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 4rem auto; text-align: center;">
+    <div class="card" style="padding: 3rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); background: white;">
+        <div style="font-size: 4rem; margin-bottom: 1.5rem;">✉️</div>
+        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">Confirm Your Email</h2>
+        <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem;">
+            A verification link has been sent to <strong>{{ email }}</strong>. Please check your inbox (or the server console output) and click the link to activate your account.
+        </p>
+        <a href="{% url 'accounts:login' %}" class="btn btn-secondary" style="padding: 0.75rem 2rem;">Back to Login</a>
+    </div>
+</div>
+{% endblock %}

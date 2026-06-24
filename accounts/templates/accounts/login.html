@@ -1,0 +1,55 @@
+{% extends "employees/base.html" %}
+{% load static %}
+
+{% block title %}Login | ACME Portal{% endblock %}
+{% block header %}Login{% endblock %}
+{% block subheader %}Access the ACME Portal{% endblock %}
+
+{% block content %}
+<div style="max-width: 450px; margin: 3rem auto;">
+    <div class="card" style="padding: 2.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); background: white;">
+        <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center; color: var(--text-main);">Welcome Back</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem; text-align: center;">Sign in with your registered email</p>
+        
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="errorlist" style="margin-bottom: 1.5rem; background: #FEE2E2; padding: 0.75rem; border-radius: var(--radius-md);">
+                    {% for error in form.non_field_errors %}
+                        <p style="margin: 0;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="id_email">Email Address</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="errorlist">{{ form.email.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="id_password">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="errorlist">{{ form.password.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div style="text-align: right; margin-bottom: 2rem;">
+                <a href="{% url 'accounts:forgot_password' %}" style="font-size: 0.9rem; color: var(--primary-color); text-decoration: none; font-weight: 500; transition: var(--transition);">Forgot Password?</a>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.9rem; font-size: 1rem; border-radius: var(--radius-md);">Sign In</button>
+        </form>
+        
+        <div style="margin-top: 2rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                Don't have an account? 
+                <a href="{% url 'accounts:register' %}" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">Register here</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

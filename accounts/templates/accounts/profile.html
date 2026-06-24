@@ -1,0 +1,76 @@
+{% extends "employees/base.html" %}
+{% load static %}
+
+{% block title %}Update Profile | ACME Portal{% endblock %}
+{% block header %}Update Profile{% endblock %}
+{% block subheader %}Keep your contact details up-to-date{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 2rem auto;">
+    <div class="card" style="padding: 2.5rem; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border-color);">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">Profile Settings</h2>
+        
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="errorlist" style="margin-bottom: 1.5rem; background: #FEE2E2; padding: 0.75rem; border-radius: var(--radius-md);">
+                    {% for error in form.non_field_errors %}
+                        <p style="margin: 0;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; background: #F9FAFB; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                {% if user.profile_image %}
+                    <img src="{{ user.profile_image.url }}" class="avatar" alt="{{ user.first_name }}" style="width: 80px; height: 80px; border-radius: var(--radius-full); object-fit: cover; border: 2px solid var(--primary-color);">
+                {% else %}
+                    <div style="width: 80px; height: 80px; border-radius: var(--radius-full); background: var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">👤</div>
+                {% endif %}
+                <div>
+                    <h3 style="font-weight: 600; font-size: 1.1rem; color: var(--text-main);">{{ user.first_name }} {{ user.last_name }}</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Employee ID: <strong>{{ user.employee_id }}</strong> | Role: {{ user.role }}</p>
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div class="form-group">
+                    <label for="id_first_name">First Name</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                        <div class="errorlist">{{ form.first_name.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_last_name">Last Name</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                        <div class="errorlist">{{ form.last_name.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_phone">Phone Number</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                    <div class="errorlist">{{ form.phone.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 2.5rem;">
+                <label for="id_profile_image">Change Profile Image</label>
+                {{ form.profile_image }}
+                {% if form.profile_image.errors %}
+                    <div class="errorlist">{{ form.profile_image.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <button type="submit" class="btn btn-primary" style="flex: 2; padding: 0.8rem; border-radius: var(--radius-md);">Save Updates</button>
+                <a href="{% url 'accounts:dashboard' %}" class="btn btn-secondary" style="flex: 1; padding: 0.8rem; border-radius: var(--radius-md); text-decoration: none;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
