@@ -14,12 +14,14 @@ class HRMSPlatformTests(APITestCase):
         
         self.admin_user = User.objects.create_user(
             email="admin@company.local",
+            username="admin@company.local",
             employee_id="ADM001",
             role="ADMIN",
             password="testpassword123"
         )
         self.employee_user = User.objects.create_user(
             email="emp@company.local",
+            username="emp@company.local",
             employee_id="EMP001",
             role="EMPLOYEE",
             password="testpassword123"
@@ -110,7 +112,7 @@ class HRMSPlatformTests(APITestCase):
         
         create_log = AuditLog.objects.filter(action="CREATE", module="Employees").first()
         self.assertIsNotNone(create_log)
-        self.assertIn("EMP102", create_log.details)
+        self.assertIn("EMP102", create_log.details or "")
         
         emp_id = response.data['data']['id']
         url_detail = reverse('employee-v1-detail', args=[emp_id])
@@ -119,7 +121,7 @@ class HRMSPlatformTests(APITestCase):
         
         delete_log = AuditLog.objects.filter(action="DELETE", module="Employees").first()
         self.assertIsNotNone(delete_log)
-        self.assertIn("Jane Smith", delete_log.details)
+        self.assertIn("Jane Smith", delete_log.details or "")
 
     def test_audit_logs_rbac(self):
         self.client.force_authenticate(user=self.employee_user)
