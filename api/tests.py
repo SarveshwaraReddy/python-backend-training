@@ -19,6 +19,7 @@ class HRMSPlatformTests(APITestCase):
             role="ADMIN",
             password="testpassword123"
         )
+        
         self.employee_user = User.objects.create_user(
             email="emp@company.local",
             username="emp@company.local",
