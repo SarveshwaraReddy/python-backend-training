@@ -1,5 +1,5 @@
 from django.urls import reverse
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 from accounts.models import User
 from departments.models import Department
@@ -7,6 +7,8 @@ from employees.models import Employee
 from audit_logs.models import AuditLog
 
 class HRMSPlatformTests(APITestCase):
+    client: APIClient
+    
     def setUp(self):
         self.dept = Department.objects.create(name="Engineering", description="Eng Dept")
         
