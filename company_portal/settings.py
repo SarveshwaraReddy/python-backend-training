@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django_filters',
     'drf_yasg',
     'api',
+    'audit_logs',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'company_portal.middleware.CurrentRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'company_portal.urls'
@@ -125,6 +127,16 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',
     ),
     'DEFAULT_PAGINATION_CLASS': 'api.pagination.StandardResultsSetPagination',
+    'EXCEPTION_HANDLER': 'api.exceptions.custom_exception_handler.custom_exception_handler',
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.UserRateThrottle',
+        'rest_framework.throttling.AnonRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '100/min',
+        'anon': '10/min',
+        'login': '5/min',
+    }
 }
 
 # Internationalization

@@ -1,0 +1,7 @@
+python-interpreter-path = "../../.venv/Scripts/python.exe"
+project-excludes = [
+    "c:/__pyrefly_virtual__/**",
+    "c:\\__pyrefly_virtual__\\**",
+    "**/__pyrefly_virtual__/**",
+    "__pyrefly_virtual__/**"
+]
