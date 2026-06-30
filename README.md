@@ -52,30 +52,7 @@ HR Dashboard: Employee management, recruitment metrics
 
 Employee Dashboard: Profile, salary info, department
 
-📂 Project Structure
-Code
-company_portal/
-│
-├── accounts/
-│   ├── models.py
-│   ├── forms.py
-│   ├── views.py
-│   ├── urls.py
-│   ├── decorators.py
-│   ├── permissions.py
-│   ├── admin.py
-│   │
-│   ├── templates/
-│   │   └── accounts/
-│   │       ├── register.html
-│   │       ├── login.html
-│   │       ├── profile.html
-│   │       └── dashboard.html
-│
-├── employees/
-├── departments/
-├── media/
-└── requirements.txt
+
 🚀 How to Run
 Clone the repository
 
