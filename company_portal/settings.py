@@ -40,11 +40,15 @@ INSTALLED_APPS = [
     'departments',
     'employees',
     'accounts',
+    'payroll',
+    'attendance',
     'rest_framework',
     'django_filters',
     'drf_yasg',
     'api',
     'audit_logs',
+    'django_celery_results',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -167,3 +171,58 @@ LOGIN_URL = 'accounts:login'
 
 # Email backend for password reset & verification (logs to standard output)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Celery Broker and Result Backend Configuration
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_CACHE_BACKEND = 'django-cache'
+
+# Celery Serialization
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+# Queue Routing and Separation
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_TASK_QUEUES = {
+    'default': {
+        'exchange': 'default',
+        'routing_key': 'default',
+    },
+    'emails': {
+        'exchange': 'emails',
+        'routing_key': 'emails',
+    },
+    'reports': {
+        'exchange': 'reports',
+        'routing_key': 'reports',
+    },
+    'notifications': {
+        'exchange': 'notifications',
+        'routing_key': 'notifications',
+    },
+    'payroll': {
+        'exchange': 'payroll',
+        'routing_key': 'payroll',
+    },
+}
+
+# Routing configurations for specific tasks
+CELERY_TASK_ROUTES = {
+    'company_portal.tasks.email_tasks.send_welcome_email': {'queue': 'emails'},
+    'company_portal.tasks.email_tasks.send_salary_email': {'queue': 'emails'},
+    'company_portal.tasks.payroll_tasks.generate_salary_pdf': {'queue': 'payroll'},
+    'company_portal.tasks.report_tasks.generate_attendance_report': {'queue': 'reports'},
+    'company_portal.tasks.report_tasks.generate_department_report': {'queue': 'reports'},
+    'company_portal.tasks.notification_tasks.notify_hr': {'queue': 'notifications'},
+    'company_portal.tasks.payroll_tasks.bulk_employee_import_task': {'queue': 'payroll'},
+}
+
+# Eager mode for tests to run Celery tasks synchronously
+import sys
+if 'test' in sys.argv or 'test_coverage' in sys.argv:
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+
+

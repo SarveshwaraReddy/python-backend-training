@@ -94,3 +94,70 @@ class UserRBACPermission(permissions.BasePermission):
                 
         # Users can retrieve and update their own User instance
         return obj == request.user
+
+
+class PayrollRBACPermission(permissions.BasePermission):
+    """
+    Role-Based Access Control for Payroll APIs:
+    - ADMIN: Full CRUD access.
+    - HR: Create, Read, and Update access (no DELETE).
+    - EMPLOYEE / MANAGER: Read access to their own records only.
+    """
+    def has_permission(self, request, view):
+        if not (request.user and request.user.is_authenticated):
+            return False
+            
+        if request.user.role == 'ADMIN':
+            return True
+            
+        if request.user.role == 'HR':
+            if request.method == 'DELETE':
+                return False
+            return True
+            
+        if request.user.role in ['EMPLOYEE', 'MANAGER']:
+            if request.method in permissions.SAFE_METHODS:
+                return True
+            return False
+            
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.role in ['ADMIN', 'HR']:
+            return True
+            
+        if request.user.role in ['EMPLOYEE', 'MANAGER']:
+            return obj.employee.employee_id == request.user.employee_id
+            
+        return False
+
+
+class AttendanceRBACPermission(permissions.BasePermission):
+    """
+    Role-Based Access Control for Attendance APIs:
+    - ADMIN & HR: Full CRUD access.
+    - MANAGER: Full CRUD access (to manage team attendance).
+    - EMPLOYEE: Read-only access to their own attendance.
+    """
+    def has_permission(self, request, view):
+        if not (request.user and request.user.is_authenticated):
+            return False
+            
+        if request.user.role in ['ADMIN', 'HR', 'MANAGER']:
+            return True
+            
+        if request.user.role == 'EMPLOYEE':
+            if request.method in permissions.SAFE_METHODS:
+                return True
+            return False
+            
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.role in ['ADMIN', 'HR', 'MANAGER']:
+            return True
+            
+        if request.user.role == 'EMPLOYEE':
+            return obj.employee.employee_id == request.user.employee_id
+            
+        return False

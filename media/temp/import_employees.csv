@@ -1,0 +1,3 @@
+employee_id,first_name,last_name,email,phone,salary,joining_date,designation,department_name
+EMP501,Alice,Smith,alice@company.local,9876543210,45000.00,2026-02-01,Developer,Engineering
+EMP502,Bob,Jones,bob@company.local,9876543211,48000.00,2026-02-15,Designer,Marketing

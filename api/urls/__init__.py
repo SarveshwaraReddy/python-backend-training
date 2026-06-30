@@ -14,7 +14,12 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
+from api.views.v1.task_status import TaskStatusView
+
 urlpatterns = [
+    # Task Status API
+    path('tasks/<str:task_id>/', TaskStatusView.as_view(), name='task-status'),
+    
     # Version 1 APIs
     path('v1/', include('api.urls.v1')),
     

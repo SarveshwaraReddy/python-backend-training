@@ -7,7 +7,7 @@ class EmployeeSerializerV2(serializers.ModelSerializer):
     # Writeable field if needed, but we read it as a full object and can set it by ID using another field
     department_id = serializers.IntegerField(write_only=True, required=False)
     
-    class Meta:
+    class Meta:  # type: ignore
         model = Employee
         fields = [
             'id', 'employee_id', 'first_name', 'last_name', 'email', 'phone',
