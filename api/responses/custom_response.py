@@ -16,4 +16,5 @@ class ErrorResponse(Response):
             "message": message,
             "errors": errors if errors is not None else {}
         }
+        
         super().__init__(data=formatted_data, status=status, **kwargs)

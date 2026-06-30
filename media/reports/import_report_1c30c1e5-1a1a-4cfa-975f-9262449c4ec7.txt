@@ -1,0 +1,7 @@
+BULK EMPLOYEE IMPORT REPORT
+===========================
+Task ID: 1c30c1e5-1a1a-4cfa-975f-9262449c4ec7
+Total Rows: 2
+Successfully Imported: 2
+Failed Rows: 0
+

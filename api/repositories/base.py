@@ -1,5 +1,7 @@
+from typing import Any
+
 class BaseRepository:
-    model = None
+    model: Any = None
 
     def get_all(self):
         return self.model.objects.all()

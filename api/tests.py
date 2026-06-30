@@ -2,10 +2,18 @@
 from django.urls import reverse
 from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
+from django.test import override_settings
 from accounts.models import User
 from departments.models import Department
 from employees.models import Employee
 from audit_logs.models import AuditLog
+
+# Force Celery eager mode during testing to prevent connection attempts to Redis broker
+from company_portal.celery import app as celery_app
+celery_app.conf.update(
+    task_always_eager=True,
+    task_eager_propagates=True,
+)
 
 class HRMSPlatformTests(APITestCase):
     client: APIClient
@@ -135,3 +143,184 @@ class HRMSPlatformTests(APITestCase):
         response_admin = self.client.get(url)
         self.assertEqual(response_admin.status_code, status.HTTP_200_OK)
         self.assertTrue(response_admin.data['success'])
+
+    def test_salary_check_constraint(self):
+        from django.core.exceptions import ValidationError
+        emp = Employee(
+            employee_id="EMP990",
+            first_name="Short",
+            last_name="Paid",
+            email="short@company.local",
+            phone="9111111111",
+            salary=5000.00,  # Invalid salary
+            joining_date="2026-01-01",
+            designation="Intern",
+            department=self.dept,
+            status="active"
+        )
+        with self.assertRaises(ValidationError):
+            emp.full_clean()
+        
+        from django.db import IntegrityError
+        with self.assertRaises((IntegrityError, ValidationError)):
+            emp.save()
+
+    def test_joining_date_trigger_future(self):
+        import datetime
+        from django.core.exceptions import ValidationError
+        future_date = datetime.date.today() + datetime.timedelta(days=10)
+        emp = Employee(
+            employee_id="EMP991",
+            first_name="Future",
+            last_name="Hire",
+            email="future@company.local",
+            phone="9222222222",
+            salary=15000.00,
+            joining_date=future_date,
+            designation="Developer",
+            department=self.dept,
+            status="active"
+        )
+        with self.assertRaises(ValidationError):
+            emp.full_clean()
+            
+        from django.db import InternalError, IntegrityError
+        with self.assertRaises((InternalError, IntegrityError, ValidationError)):
+            emp.save()
+
+    def test_salary_processing_service_atomicity(self):
+        from services.payroll_service import SalaryProcessingService
+        from payroll.models import Payroll
+        from django.db import IntegrityError
+        
+        old_salary = self.employee.salary
+        month = "2026-06"
+        
+        payroll_rec = SalaryProcessingService.process_salary(self.employee.employee_id, month, 55000.00)
+        self.assertIsNotNone(payroll_rec)
+        self.employee.refresh_from_db()
+        self.assertEqual(self.employee.salary, 55000.00)
+        
+        with self.assertRaises(IntegrityError):
+            SalaryProcessingService.process_salary(self.employee.employee_id, month, 60000.00)
+            
+        self.employee.refresh_from_db()
+        self.assertEqual(self.employee.salary, 55000.00)
+        self.assertEqual(Payroll.objects.filter(employee=self.employee, month=month).count(), 1)
+
+    def test_orm_optimization_query_count(self):
+        from django.test.utils import CaptureQueriesContext
+        from django.db import connection
+        
+        self.client.force_authenticate(user=self.admin_user)
+        url = reverse('employee-v1-list')
+        
+        with CaptureQueriesContext(connection) as ctx:
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            
+        # Should be optimized to avoid N+1 queries. Maximum 5 queries including authentication and count.
+        self.assertLessEqual(len(ctx.captured_queries), 5)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_welcome_email_task_trigger_on_employee_create(self):
+        from django.core import mail
+        self.client.force_authenticate(user=self.admin_user)
+        
+        mail.outbox = []
+        
+        url = reverse('employee-v1-list')
+        data = {
+            "employee_id": "EMP888",
+            "first_name": "TestWelcome",
+            "last_name": "User",
+            "email": "testwelcome@company.local",
+            "phone": "9998887776",
+            "salary": 35000.00,
+            "joining_date": "2026-06-01",
+            "designation": "QA Engineer",
+            "department": self.dept.id,
+            "status": "active"
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("Welcome to the team!", mail.outbox[0].body)
+        self.assertEqual(mail.outbox[0].to, ["testwelcome@company.local"])
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_payroll_pdf_and_email_trigger_on_payroll_create(self):
+        from django.core import mail
+        self.client.force_authenticate(user=self.admin_user)
+        mail.outbox = []
+        
+        url = reverse('payroll-v1-list')
+        data = {
+            "employee": self.employee.id,
+            "month": "2026-07",
+            "net_salary": 52000.00
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        import os
+        from django.conf import settings
+        pdf_path = os.path.join(settings.MEDIA_ROOT, 'payrolls', f"salary_slip_{self.employee.employee_id}_2026-07.pdf")
+        self.assertTrue(os.path.exists(pdf_path))
+        
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [self.employee.email])
+        self.assertEqual(len(mail.outbox[0].attachments), 1)
+        self.assertEqual(mail.outbox[0].attachments[0][0], f"salary_slip_{self.employee.employee_id}_2026-07.pdf")
+
+    def test_task_status_endpoint(self):
+        self.client.force_authenticate(user=self.admin_user)
+        url = reverse('task-status', args=['dummy-task-id-123'])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['task_id'], 'dummy-task-id-123')
+        self.assertIn('status', response.data)
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_bulk_employee_import_api_csv(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        self.client.force_authenticate(user=self.admin_user)
+        
+        csv_content = (
+            "employee_id,first_name,last_name,email,phone,salary,joining_date,designation,department_name\n"
+            "EMP501,Alice,Smith,alice@company.local,9876543210,45000.00,2026-02-01,Developer,Engineering\n"
+            "EMP502,Bob,Jones,bob@company.local,9876543211,48000.00,2026-02-15,Designer,Marketing\n"
+        )
+        
+        uploaded_file = SimpleUploadedFile(
+            name="import_employees.csv",
+            content=csv_content.encode('utf-8'),
+            content_type="text/csv"
+        )
+        
+        url = reverse('employee-v1-import-bulk')
+        response = self.client.post(url, {'file': uploaded_file}, format='multipart')
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+        self.assertTrue(response.data['success'])
+        self.assertIn('task_id', response.data['data'])
+        
+        self.assertTrue(Employee.objects.filter(employee_id="EMP501").exists())
+        self.assertTrue(Employee.objects.filter(employee_id="EMP502").exists())
+        self.assertEqual(Employee.objects.get(employee_id="EMP501").department.name, "Engineering")
+
+    @override_settings(CELERY_TASK_ALWAYS_EAGER=True)
+    def test_async_reports_endpoints(self):
+        self.client.force_authenticate(user=self.admin_user)
+        
+        url_att = reverse('reports-v1', args=['attendance-summary'])
+        response_att = self.client.post(url_att, {'month': '2026-06'}, format='json')
+        self.assertEqual(response_att.status_code, status.HTTP_202_ACCEPTED)
+        self.assertTrue(response_att.data['success'])
+        
+        url_dept = reverse('reports-v1', args=['department-summary'])
+        response_dept = self.client.post(url_dept, format='json')
+        self.assertEqual(response_dept.status_code, status.HTTP_202_ACCEPTED)
+        self.assertTrue(response_dept.data['success'])
+
+

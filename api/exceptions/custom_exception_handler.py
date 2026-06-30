@@ -27,6 +27,7 @@ def custom_exception_handler(exc, context):
                     else:
                         formatted_errors[key] = val
                 errors = formatted_errors
+                
             elif isinstance(errors, list):
                 errors = {"non_field_errors": errors[0] if errors else ""}
         elif response.status_code == status.HTTP_401_UNAUTHORIZED:

@@ -24,5 +24,31 @@ class Employee(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        import datetime
+        super().clean()
+        if self.salary is not None and self.salary < 10000:
+            raise ValidationError({'salary': 'Salary must be at least 10000.'})
+        if self.joining_date and self.joining_date > datetime.date.today():
+            raise ValidationError({'joining_date': 'Joining date cannot be in the future.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(salary__gte=10000),
+                name='salary_check'
+            )
+        ]
+        indexes = [
+            models.Index(fields=['joining_date'], name='idx_employee_joining_date'),
+            models.Index(fields=['salary'], name='idx_employee_salary'),
+            models.Index(fields=['department', 'salary'], name='idx_department_salary'),
+        ]
+
     def __str__(self):
         return self.first_name

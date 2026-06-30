@@ -1,0 +1,15 @@
+BULK EMPLOYEE IMPORT REPORT
+===========================
+Task ID: d60fcca1-5ad2-4194-8098-23c4143b8aab
+Total Rows: 2
+Successfully Imported: 0
+Failed Rows: 2
+
+Failed Rows Details:
+--------------------
+Row 1: Error: 'UserManager' object has no attribute 'make_random_password'
+Data: {'employee_id': 'EMP501', 'first_name': 'Alice', 'last_name': 'Smith', 'email': 'alice@company.local', 'phone': '9876543210', 'salary': '45000.00', 'joining_date': '2026-02-01', 'designation': 'Developer', 'department_name': 'Engineering'}
+
+Row 2: Error: 'UserManager' object has no attribute 'make_random_password'
+Data: {'employee_id': 'EMP502', 'first_name': 'Bob', 'last_name': 'Jones', 'email': 'bob@company.local', 'phone': '9876543211', 'salary': '48000.00', 'joining_date': '2026-02-15', 'designation': 'Designer', 'department_name': 'Marketing'}
+

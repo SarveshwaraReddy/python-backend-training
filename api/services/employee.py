@@ -12,11 +12,12 @@ class EmployeeService:
 
     def create_employee(self, data):
         if 'salary' not in data:
-            data['salary'] = 0.0
+            data['salary'] = 10000.0
         if 'joining_date' not in data:
             import datetime
             data['joining_date'] = datetime.date.today()
         return self.repository.create(**data)
+        
 
     def update_employee(self, pk, data):
         employee = self.repository.get_by_id(pk)
