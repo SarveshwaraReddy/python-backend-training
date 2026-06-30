@@ -1,264 +1,147 @@
-# Employee Database Management System
+HRMS Background Processing Platform (Django + Celery + Redis)
+📌 Overview
+This project demonstrates how to build enterprise-grade asynchronous systems using Celery + Redis + Django. It focuses on background processing, scheduled jobs, email queues, report generation, notifications, retries, monitoring, and task optimization — essential for production-ready HRMS applications.
 
-A Django project for managing company employees and departments using PostgreSQL database.
+🎯 Training Goal
+Prevent long-running operations (emails, payroll, reports) from blocking user requests by offloading them to background tasks.
 
-## Project Overview
+⚙️ Tech Stack
+Python 3.x
 
-This project is an HR Management Portal built to manage company structure and staff. It provides a comprehensive system to handle:
-- **Departments**: Create, organize, and manage different functional groups within the company. Each department can have its own description and tracking.
-- **Employees**: Detailed employee records including personal information, contact details, job designation, salary, and their assigned department.
+Django (Web framework)
 
-The system was built as part of backend training to learn:
-- PostgreSQL database setup
-- Django models and migrations
-- Django ORM CRUD operations
-- Django Admin Panel customization
-- HR Management Portal with search and filter
+Celery (Distributed task queue)
 
-## Project Structure
+Redis (Message broker)
 
-```
+django-celery-results (Task result backend)
+
+django-celery-beat (Scheduler)
+
+Flower (Task monitoring dashboard)
+
+📂 Modules Implemented
+Asynchronous Processing: Save data, create Celery task, return response immediately
+
+Celery Architecture: Django → Redis Broker → Celery Worker → Result Backend
+
+Package Installation: celery, redis, django-celery-results, django-celery-beat
+
+Celery Configuration: Broker, backend, task discovery, logging
+
+Background Tasks: Welcome emails, salary slip PDFs, attendance reports, notifications
+
+Task States: PENDING, STARTED, SUCCESS, FAILURE, RETRY
+
+Scheduled Tasks: Daily, weekly, monthly, hourly jobs
+
+Retry Mechanism: Retry failed tasks with delay and max retries
+
+Email Queue: Bulk employee import with queued welcome emails
+
+Report Generation: Payroll, attendance, department reports stored in /media/reports/
+
+Monitoring: Flower dashboard for tasks, retries, workers, queue length
+
+Production Optimizations: Separate queues, multiple workers, rate limiting, task priorities
+
+📊 Business Scenario Solved
+Sending 5,000 welcome emails without blocking requests
+
+Generating monthly payroll PDFs asynchronously
+
+Creating attendance reports in background
+
+Sending salary slips in parallel
+
+Delivering notifications without delays
+
+📂 Project Structure
+Code
 company_portal/
-├── manage.py
-├── employees/
-│   ├── models.py
-│   ├── admin.py
-│   ├── views.py
-│   ├── urls.py
-│   ├── migrations/
-│   └── templates/
-├── departments/
-│   ├── models.py
-│   ├── admin.py
-│   ├── views.py
-│   ├── urls.py
-│   ├── migrations/
-│   └── templates/
-├── requirements.txt
-└── README.md
-```
+│
+├── celery.py
+│
+├── tasks/
+│   ├── email_tasks.py
+│   ├── payroll_tasks.py
+│   ├── report_tasks.py
+│   ├── attendance_tasks.py
+│   └── notification_tasks.py
+│
+├── services/
+├── reports/
+├── media/
+└── logs/
+🚀 Setup & Installation
+Clone the repository
 
-## Tech Stack & Packages Used
+bash
+git clone <repo-url>
+cd company_portal
+Install dependencies
 
-### Core Technologies
-- **Python**: Core programming language.
-- **Django 6**: High-level Python web framework.
-- **PostgreSQL**: Open-source relational database.
-- **HTML5 & CSS3**: Custom frontend layouts and styling.
-
-### Python Packages (from `requirements.txt`)
-- **Django (`>=6.0`)**: Core web framework.
-- **psycopg2-binary**: PostgreSQL database adapter for Python.
-- **Pillow (`>=10.0.0`)**: Image processing library used for employee profile image uploads.
-
-## PostgreSQL Setup
-
-1. Install PostgreSQL and verify installation:
-
-```powershell
-psql --version
-```
-
-2. Open the PostgreSQL shell (`psql`) and create the database and user:
-
-```sql
-CREATE DATABASE employee_management;
-
-CREATE USER employee_admin WITH PASSWORD 'Sarva@127536';
-
-GRANT ALL PRIVILEGES ON DATABASE employee_management TO employee_admin;
-```
-
-3. Database configurations in [settings.py](file:///c:/Users/DELL/Backend-training/Django-projects/company_portal/company_portal/settings.py) are as follows:
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'employee_management',
-        'USER': 'employee_admin',
-        'PASSWORD': 'Sarva@127536',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
-}
-```
-
-## How to Run
-
-1. Go to project folder:
-
-```powershell
-cd Django-projects/company_portal
-```
-
-2. Activate virtual environment:
-
-```powershell
-..\venv\Scripts\activate
-```
-
-3. Install dependencies:
-
-```powershell
+bash
 pip install -r requirements.txt
-```
+Start Redis server
 
-4. Run migrations:
+bash
+redis-server
+Run Celery worker
 
-```powershell
-python manage.py makemigrations
-python manage.py migrate
-```
+bash
+celery -A company_portal worker -l info
+Run Celery beat (scheduler)
 
-5. Create superuser for admin panel:
+bash
+celery -A company_portal beat -l info
+Run Django server
 
-```powershell
-python manage.py createsuperuser
-```
-
-6. Start server:
-
-```powershell
+bash
 python manage.py runserver
-```
+🧩 Practical Tasks Implemented
+send_welcome_email()
 
-7. Open in browser:
-- Home: http://127.0.0.1:8000/
-- Departments: http://127.0.0.1:8000/departments/
-- Employees: http://127.0.0.1:8000/employees/
-- Admin Panel: http://127.0.0.1:8000/admin/
+generate_salary_pdf()
 
-## Seed Sample Data (Optional)
+send_salary_email()
 
-You can populate the database with sample data (5 departments, 20 employees by default) using the custom management command:
+notify_hr()
 
-```powershell
-python manage.py seed_data
-```
+generate_attendance_report()
 
-Pass `--departments` and `--employees` to change counts:
+Task status API: /api/tasks/{task_id}
 
-```powershell
-python manage.py seed_data --departments 5 --employees 20
-```
+Scheduled jobs with Celery Beat
 
-## Models
+Retry mechanism for failed tasks
 
-### Department
-- name
-- description
-- created_at
-- updated_at
+Bulk employee import with queued emails
 
-### Employee
-- employee_id
-- first_name
-- last_name
-- email
-- phone
-- salary
-- joining_date
-- designation
-- department (Foreign Key)
-- status
-- created_at
-- updated_at
+📊 Monitoring
+Run Flower:
 
-## Django ORM Examples
+bash
+celery -A company_portal flower
+Access dashboard: http://localhost:5555
 
-Open Django shell:
+Monitor:
 
-```powershell
-python manage.py shell
-```
+Running tasks
 
-Create department:
+Failed tasks
 
-```python
-from departments.models import Department
-Department.objects.create(name="Engineering", description="Software development team")
-```
+Retries
 
-Create employee:
+Workers
 
-```python
-from employees.models import Employee
-from departments.models import Department
+Queue length
 
-dept = Department.objects.get(name="Engineering")
+📌 Learning Outcomes
+Build scalable asynchronous systems
 
-Employee.objects.create(
-    employee_id="EMP001",
-    first_name="Ajay",
-    last_name="Kumar",
-    email="ajay@example.com",
-    phone="9876543210",
-    salary=50000,
-    joining_date="2024-01-15",
-    designation="Developer",
-    department=dept,
-    status="active"
-)
-```
+Implement enterprise HRMS background processing
 
-Sample queries:
+Optimize tasks with queues, workers, priorities, and retries
 
-```python
-Employee.objects.count()
-Employee.objects.filter(salary__gt=50000)
-Employee.objects.filter(department__name="Engineering")
-Employee.objects.order_by("-salary")
-```
-
-## Admin Panel Features
-
-- Employee list display with employee_id, name, email, salary, department
-- Search employees by employee_id, first_name, email
-- Filter employees by department
-- Department search by name
-
-## HR Portal Features
-
-### Department Management
-- Add Department
-- Update Department
-- Delete Department
-- Search Department
-
-### Employee Management
-- Add Employee
-- Update Employee
-- Delete Employee
-- Search Employee
-- Filter Employee by Department
-
-## Git Workflow
-
-```powershell
-git checkout development
-git pull origin development
-git checkout -b feature/models-postgresql
-```
-
-Suggested commit messages:
-- feat: configure PostgreSQL database
-- feat: create employee and department models
-- feat: implement Django ORM operations
-- feat: customize Django admin panel
-
-## Verify Database Tables
-
-```powershell
-python manage.py dbshell
-```
-
-Inside PostgreSQL shell:
-
-```sql
-\dt
-```
-
-## Author
-
-Django Backend Developer Trainee
+Monitor and manage tasks in production environments
