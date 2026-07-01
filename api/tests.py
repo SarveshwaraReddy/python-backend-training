@@ -324,3 +324,174 @@ class HRMSPlatformTests(APITestCase):
         self.assertTrue(response_dept.data['success'])
 
 
+class DjangoORMAndHRAnalyticsTests(APITestCase):
+    client: APIClient
+    
+    def setUp(self):
+        self.dept = Department.objects.create(name="Engineering", description="Eng Dept")
+        self.dept_sales = Department.objects.create(name="Sales", description="Sales Dept")
+        
+        self.admin_user = User.objects.create_user(
+            email="admin@company.local",
+            username="admin@company.local",
+            employee_id="ADM001",
+            role="ADMIN",
+            password="testpassword123"
+        )
+        
+        self.employee1 = Employee.objects.create(
+            employee_id="EMP001",
+            first_name="John",
+            last_name="Doe",
+            email="john@company.local",
+            phone="9123456789",
+            salary=50000.00,
+            joining_date="2026-06-01",
+            designation="Developer",
+            department=self.dept,
+            status="active"
+        )
+
+        self.employee2 = Employee.objects.create(
+            employee_id="EMP002",
+            first_name="Jane",
+            last_name="Smith",
+            email="jane@company.local",
+            phone="9123456780",
+            joining_date="2026-07-01",
+            salary=70000.00,
+            designation="Manager",
+            department=self.dept,
+            status="active"
+        )
+
+        self.employee3 = Employee.objects.create(
+            employee_id="EMP003",
+            first_name="Bob",
+            last_name="Johnson",
+            email="bob@company.local",
+            phone="9123456781",
+            joining_date="2026-05-15",
+            salary=30000.00,
+            designation="Intern",
+            department=self.dept_sales,
+            status="inactive"
+        )
+
+    def test_model_relationships_and_serializers(self):
+        from employees.models import Skill, EmployeeProfile
+        self.client.force_authenticate(user=self.admin_user)
+        
+        # Test creation of profile and skill via serializer
+        url = reverse('employee-v2-list')
+        data = {
+            "employee_id": "EMP010",
+            "first_name": "Alice",
+            "last_name": "Green",
+            "email": "alice@company.local",
+            "phone": "9876543210",
+            "salary": 65000.00,
+            "joining_date": "2026-07-01",
+            "designation": "Developer",
+            "department_id": self.dept.id,
+            "status": "active",
+            "profile": {
+                "address": "123 Main St",
+                "birth_date": "1995-05-20",
+                "emergency_contact": "Bob Green"
+            },
+            "skills": [
+                {"name": "Python", "description": "Programming language"},
+                {"name": "Django", "description": "Web framework"}
+            ]
+        }
+        
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        
+        emp = Employee.objects.get(employee_id="EMP010")
+        self.assertEqual(emp.profile.address, "123 Main St")
+        self.assertEqual(emp.skills.count(), 2)
+        self.assertEqual(list(emp.skills.values_list('name', flat=True)), ["Python", "Django"])
+
+    def test_custom_managers_and_querysets(self):
+        # QuerySet chaining 
+        self.assertEqual(Employee.objects.active().count(), 2)
+        self.assertEqual(Employee.objects.inactive().count(), 1)
+        self.assertEqual(Employee.objects.engineering().count(), 2)
+        self.assertEqual(Employee.objects.high_salary().count(), 1)
+        self.assertEqual(Employee.objects.active().engineering().high_salary().count(), 1)
+        
+        # Manager methods
+        self.assertEqual(Employee.objects.active_employees().count(), 2)
+        self.assertEqual(Employee.objects.inactive_employees().count(), 1)
+        self.assertEqual(Employee.objects.highest_salary(), self.employee2)
+        self.assertEqual(Employee.objects.new_joiners().count(), 1)
+
+    def test_salary_increment_f_expression(self):
+        self.client.force_authenticate(user=self.admin_user)
+        url = reverse('employee-v2-list') + "increment-salaries/"
+        response = self.client.post(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        self.employee1.refresh_from_db()
+        self.assertEqual(float(self.employee1.salary), 55000.00)
+
+    def test_dashboard_stats_aggregation(self):
+        self.client.force_authenticate(user=self.admin_user)
+        url = reverse('employee-v2-list') + "dashboard-stats/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['data']['total_employees'], 3)
+        self.assertEqual(float(response.data['data']['total_salary']), 150000.00)
+        self.assertEqual(float(response.data['data']['average_salary']), 50000.00)
+        self.assertEqual(float(response.data['data']['max_salary']), 70000.00)
+        self.assertEqual(float(response.data['data']['min_salary']), 30000.00)
+
+    def test_department_dashboard_annotation(self):
+        self.client.force_authenticate(user=self.admin_user)
+        url = reverse('department-v2-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        eng_data = [d for d in response.data['data']['results'] if d['name'] == 'Engineering'][0]
+        self.assertEqual(eng_data['employee_count'], 2)
+        self.assertEqual(eng_data['average_salary'], 60000.00)
+        self.assertEqual(eng_data['highest_salary'], 70000.00)
+        self.assertEqual(eng_data['lowest_salary'], 50000.00)
+
+    def test_v2_reports_orm(self):
+        self.client.force_authenticate(user=self.admin_user)
+        
+        url_top = reverse('reports-v2', args=['top-salaries'])
+        response_top = self.client.get(url_top)
+        self.assertEqual(response_top.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_top.data['data']), 3)
+        self.assertEqual(response_top.data['data'][0]['employee_id'], "EMP002")
+        
+        url_dept = reverse('reports-v2', args=['department-summary'])
+        response_dept = self.client.get(url_dept)
+        self.assertEqual(response_dept.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_dept.data['data']), 2)
+        
+        url_join = reverse('reports-v2', args=['joined-this-month'])
+        response_join = self.client.get(url_join)
+        self.assertEqual(response_join.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_join.data['data']), 1)
+        self.assertEqual(response_join.data['data'][0]['employee_id'], "EMP002")
+
+    def test_advanced_search_q_objects(self):
+        self.client.force_authenticate(user=self.admin_user)
+        url = reverse('employee-v2-list')
+        
+        response = self.client.get(url, {'department_name': 'Engineering', 'min_salary': 60000})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['data']['count'], 1)
+        self.assertEqual(response.data['data']['results'][0]['employee_id'], "EMP002")
+
+        response_ex = self.client.get(url, {'exclude_department': 'Sales'})
+        self.assertEqual(response_ex.status_code, status.HTTP_200_OK)
+        self.assertEqual(response_ex.data['data']['count'], 2)
+
+
+
