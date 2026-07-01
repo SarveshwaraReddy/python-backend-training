@@ -24,7 +24,7 @@ class ContactView(TemplateView):
 class LoginView(RedirectView):
     pattern_name = 'accounts:login'
     permanent = True
-    
+
 class EmployeeListView(RoleRequiredMixin, ListView):
     model = Employee
     template_name = 'employees/employee_list.html'
